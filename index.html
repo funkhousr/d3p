@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <title>d3p</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+    <link rel="stylesheet" href="styles/d3p.css">
+    <script src="libs/d3.min.js"></script>
+    <script src="libs/d3p.js"></script>
+    <script>
+var appear = d3p.transitions.appear({ duration: 500 });
+
+d3p.slides = [
+  [
+    function(stage, objects, done){
+      objects.title = stage.append("text")
+        .text("Web Scaling Frameworks")
+        .attr("x", "50%")
+        .attr("y", "50%");
+      appear(objects.title, done);
+    },
+    function(stage, objects, done){
+      objects.subtitle = stage.append("text")
+        .text("Web Services in the Cloud")
+        .attr("x", "50%")
+        .attr("y", "60%");
+      appear(objects.subtitle, done);
+    }
+  ],
+  [
+    function(stage, objects, done){
+      objects.title = stage.append("text")
+        .text("Intro")
+        .attr("x", "50%")
+        .attr("y", "50%");
+      appear(objects.title, done);
+    },
+    function(stage, objects, done){
+      objects.subtitle = stage.append("text")
+        .text("This is great!")
+        .attr("x", "50%")
+        .attr("y", "60%");
+      appear(objects.subtitle, done);
+    }
+  ]
+  ];
+    </script>
+  </head>
+  <body></body>
+</html>
