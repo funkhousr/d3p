@@ -59,10 +59,6 @@ var d3p = {
   }
 };
 
-// Init
-document.addEventListener('DOMContentLoaded', d3p.init);
-
-
 // Runner
 d3p.queue = [];
 d3p.runner = {
@@ -98,3 +94,6 @@ d3p.transitions = {
     }
   }
 };
+
+// Storage for Transition Presets
+d3p.make = {};
