@@ -5,7 +5,13 @@ var d3p = {
     d3p.fragment = 0;
     d3p.width    = window.innerWidth;
     d3p.height   = window.innerHeight;
-    d3p.stage    = d3.select("body").append("svg").attr("width", d3p.width).attr("height", d3p.height);
+    d3p.stage    = d3.select("body")
+      .append("svg")
+        .attr("width", d3p.width)
+        .attr("height", d3p.height)
+        .attr("class", "d3p")
+      .append("g")
+        .attr("transform", "translate(" + d3p.width/2 + "," + d3p.height/2 + ")");
     
     // Keymapping
     document.onkeydown = function(event){
@@ -14,15 +20,16 @@ var d3p = {
     }
     
     // Hash
-    var hash = window.location.hash.substr(1).split("/")
-    d3p.show(parseInt(hash[0]), parseInt(hash[1]));
+    d3p.show(parseInt(window.location.hash.substr(1)), 0);
   },
   show: function(slide, fragment){
     d3p.slide            = slide ? slide : 0;
     d3p.fragment         = fragment ? fragment : 0;
-    window.location.hash = ["#", d3p.slide, "/", d3p.fragment].join("");
+    window.location.hash = "#" + d3p.slide;
 
-    d3p.runner.add(d3p.slides[d3p.slide][d3p.fragment]);
+    d3p.runner.add(function(done){
+      d3p.slides[d3p.slide][d3p.fragment](d3p.stage, d3p.objects, d3p.make, done);
+    });
   },
   next: function(){
     // Fragment
@@ -33,30 +40,33 @@ var d3p = {
 
     // Slide
     if(d3p.slide < d3p.slides.length-1){
-      d3p.clear();
+      d3p.runner.add(d3p.clear);
       d3p.show(d3p.slide+1, 0);
     }
   },
   previous: function(){
     // Fragment
     if(d3p.fragment >= 1){
-      d3p.clear();
+      d3p.runner.add(d3p.clear);
       d3p.show(d3p.slide, 0);
       return;
     }
 
     // Slide
     if(d3p.slide > 0){
-      d3p.clear();
+      d3p.runner.add(d3p.clear);
       d3p.show(d3p.slide-1, 0);
     }
   },
-  clear: function(){
+  clear: function(done){
     for(var name in d3p.objects){
       d3p.objects[name].remove();
     }
     d3p.objects = {};
-  }
+    done();
+  },
+  x: function(relative){ return relative * 50 + "%"; },
+  y: function(relative){ return relative * 50 + "%"; }
 };
 
 // Runner
@@ -66,11 +76,12 @@ d3p.runner = {
     d3p.queue.push(f);
     if(!d3p.running) d3p.runner.process();
   },
-  process: function(){
+  process: function(next){
+    if(next) d3p.next();
     var f = d3p.queue.shift();
     if(f){
       d3p.running = true;
-      f(d3p.stage, d3p.objects, d3p.runner.process);
+      f(d3p.runner.process);
     } else{
       d3p.running = false;
     }
@@ -78,6 +89,7 @@ d3p.runner = {
 };
 
 // Transitions
+d3p.make = {};
 d3p.transitions = {
   appear: function(params){
     return function(objects, done){
@@ -92,8 +104,15 @@ d3p.transitions = {
       .style("opacity", 1)
       .each("end", done);
     }
+  },
+  popOut: function(params){
+    return function(objects, done){
+      objects
+      .transition()
+      .duration(params.duration)
+      .attr("transform", "scale(4)")
+      .style("opacity", 0)
+      .each("end", done);
+    }
   }
 };
-
-// Storage for Transition Presets
-d3p.make = {};
