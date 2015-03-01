@@ -8,26 +8,17 @@ d3p.make = {
 d3p.slides = [
   [
     function(stage, objects, make, next){
-      objects.title = stage.append("text")
-        .text("Web Scaling Frameworks")
-        .attr("class", "h1");
+      objects.title    = phd.heading(stage, "h1", "Web Scaling Frameworks")
+        .attr("transform", "translate(0," + d3p.y(-0.05) + ")");
+      objects.subtitle = phd.heading(stage, "h2", "A novel class of frameworks for web services in the cloud")
+        .attr("transform", "translate(0," + d3p.y(0.1) + ")");
 
-      var bbox = objects.title[0][0].getBBox();
-      objects.titleBg = stage.insert("rect", ":first-child")
-        .attr("class", "h1")
-        .attr("width", bbox.width)
-        .attr("height", bbox.height)
-        .attr("x", -(bbox.width/2))
-        .attr("y", -(bbox.height/2));
-
-      make.appear(objects.titleBg, next);
-    },
-    function(stage, objects, make, next){
-      objects.subtitle = stage.append("text")
-        .text("Web Services in the Cloud")
-        .attr("class", "h2")
-        .attr("y", d3p.y(0.1));
-      make.appear(objects.subtitle, next);
+      objects.authors = stage.append("g").attr("transform", "translate(0," + d3p.y(0.5) + ")");
+      phd.heading(objects.authors, "h3", "Thomas Fankhauser")
+      phd.heading(objects.authors, "h4", "Qi Wang").attr("transform", "translate(0," + d3p.y(0.1) + ")");
+      phd.heading(objects.authors, "h4", "Ansgar Gerlicher").attr("transform", "translate(0," + d3p.y(0.2) + ")");
+      phd.heading(objects.authors, "h4", "Christos Grecos").attr("transform", "translate(0," + d3p.y(0.3) + ")");
+      phd.heading(objects.authors, "h4", "Xinheng Wang").attr("transform", "translate(0," + d3p.y(0.4) + ")");
     },
     function(stage, objects, make, next){
       d3p.make.popOut(objects.subtitle, function(){ next(true); });
@@ -47,3 +38,18 @@ d3p.slides = [
 
 // Ready, go!
 document.addEventListener('DOMContentLoaded', d3p.init);
+
+// Phd Theme Library
+var phd = {};
+phd.heading = function(stage, level, text){
+  var group = stage.append("g"),
+      title = group.append("text").text(text).attr("class", level),
+      bbox  = title[0][0].getBBox(),
+      bg    = group.insert("rect", ":first-child")
+        .attr("class" , level)
+        .attr("width" , bbox.width)
+        .attr("height", bbox.height)
+        .attr("x"     , -(bbox.width/2))
+        .attr("y"     , -(bbox.height/2));
+  return group;
+};

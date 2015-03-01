@@ -3,15 +3,28 @@ var d3p = {
     d3p.objects  = {};
     d3p.slide    = 0;
     d3p.fragment = 0;
-    d3p.width    = window.innerWidth;
-    d3p.height   = window.innerHeight;
-    d3p.stage    = d3.select("body")
-      .append("svg")
-        .attr("width", d3p.width)
-        .attr("height", d3p.height)
-        .attr("class", "d3p")
-      .append("g")
-        .attr("transform", "translate(" + d3p.width/2 + "," + d3p.height/2 + ")");
+    d3p.width    = 1280;
+    d3p.height   = 720;
+    
+    // Stage Setup
+    var svg = d3.select("body").append("svg").attr("class", "d3p"),
+        stageTranslate = svg.append("g"),
+        stageScale = stageTranslate.append("g");
+    d3p.stage = stageScale;
+
+    // Stage Resize
+    var stageResize = function(){
+      var sx = window.innerWidth / d3p.width,
+          sy = window.innerHeight / d3p.height,
+          s  = sx < sy ? sx : sy;
+      svg.attr("width", window.innerWidth).attr("height", window.innerHeight);
+      stageTranslate.attr("transform", "translate(" + window.innerWidth/2 + ", " + window.innerHeight/2 + ")")
+      stageScale.attr("transform", "scale(" + s + ")");
+    };
+
+    // Automatic Resizing
+    stageResize();
+    window.onresize = stageResize;
     
     // Keymapping
     document.onkeydown = function(event){
@@ -65,8 +78,8 @@ var d3p = {
     d3p.objects = {};
     done();
   },
-  x: function(relative){ return relative * 50 + "%"; },
-  y: function(relative){ return relative * 50 + "%"; }
+  x: function(relative){ return relative * (d3p.width/2); },
+  y: function(relative){ return relative * (d3p.height/2); }
 };
 
 // Runner
