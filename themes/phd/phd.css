@@ -29,7 +29,7 @@ svg.d3p text{
   baseline-shift: -7%;
 }
 
-svg.d3p text.h1{ font-size: 3em; }
+svg.d3p text.h1{ font-size: 6em; }
 svg.d3p text.h2{ font-size: 2em; }
 svg.d3p text.h3{ font-size: 1.8em; }
 svg.d3p text.h4{ font-size: 1.5em; }
@@ -42,6 +42,10 @@ svg.d3p text.h4,
 svg.d3p text.h5{ 
   font-family: 'Open Sans Condensed', sans-serif;
   fill: white; 
+}
+
+svg.d3p text.h1{
+ fill: #0068B3;
 }
 
 svg.d3p rect.h1{ fill: #0068B3; }

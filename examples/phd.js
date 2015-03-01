@@ -8,18 +8,22 @@ d3p.make = {
 d3p.slides = [
   [
     function(stage, objects, make, next){
-      objects.title    = d3p.theme.phd.heading(stage, "h1", "Web Scaling Frameworks")
-        .attr("transform", "translate(0," + d3p.y(-0.05) + ")");
+      objects.title = d3p.theme.default.group(stage, 0, -0.1);
+      objects.title.append("text").text("Web Scaling Frameworks").attr("class", "h1");
       
-      objects.subtitle = d3p.theme.phd.heading(stage, "h2", "A novel class of frameworks for web services in the cloud")
-        .attr("transform", "translate(0," + d3p.y(0.1) + ")");
+      objects.subtitle = d3p.theme.default.group(stage, 0, 0.1);
+      d3p.theme.phd.heading(objects.subtitle, "h2", "A novel class of frameworks for web services in the cloud");
 
       objects.authors = d3p.theme.default.group(stage, 0, 0.5);
-      d3p.theme.phd.heading(objects.authors, "h3", "Thomas Fankhauser")
-      d3p.theme.phd.heading(objects.authors, "h4", "Qi Wang").attr("transform", "translate(0," + d3p.y(0.1) + ")");
-      d3p.theme.phd.heading(objects.authors, "h4", "Ansgar Gerlicher").attr("transform", "translate(0," + d3p.y(0.2) + ")");
-      d3p.theme.phd.heading(objects.authors, "h4", "Christos Grecos").attr("transform", "translate(0," + d3p.y(0.3) + ")");
-      d3p.theme.phd.heading(objects.authors, "h4", "Xinheng Wang").attr("transform", "translate(0," + d3p.y(0.4) + ")");
+      [
+        ["h3", "Thomas Fankhauser"],
+        ["h4", "Qi Wang"],
+        ["h4", "Ansgar Gerlicher"],
+        ["h4", "Christos Grecos"],
+        ["h4", "Xinheng Wang"],
+      ].forEach(function(author, i){
+        d3p.theme.phd.heading(objects.authors, author[0], author[1]).attr("transform", "translate(0," + d3p.y(i * 0.1) + ")");
+      });
 
       next();
     }
