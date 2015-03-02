@@ -9,20 +9,18 @@ d3p.slides = [
   [
     function(stage, objects, make, next){
       objects.title = d3p.theme.default.group(stage, 0, -0.1);
-      objects.title.append("text").text("Web Scaling Frameworks").attr("class", "h1");
+      objects.title.append("text").text("d3p: D3 Present Framework").attr("class", "h1");
       
       objects.subtitle = d3p.theme.default.group(stage, 0, 0.1);
-      d3p.theme.phd.heading(objects.subtitle, "h2", "A novel class of frameworks for web services in the cloud");
+      d3p.theme.phd.heading(objects.subtitle, "h2", "Using d3.js and SVG to create rich animated presentations in the browser");
 
-      objects.authors = d3p.theme.default.group(stage, 0, 0.5);
+      objects.author = d3p.theme.default.group(stage, 0, 0.8);
       [
         ["h3", "Thomas Fankhauser"],
-        ["h4", "Qi Wang"],
-        ["h4", "Ansgar Gerlicher"],
-        ["h4", "Christos Grecos"],
-        ["h4", "Xinheng Wang"],
+        ["h4", "tommy@southdesign.de"],
+        ["h4", "@tommyfankhauser"]
       ].forEach(function(author, i){
-        d3p.theme.phd.heading(objects.authors, author[0], author[1]).attr("transform", "translate(0," + d3p.y(i * 0.1) + ")");
+        d3p.theme.phd.heading(objects.author, author[0], author[1]).attr("transform", "translate(0," + d3p.y(i * 0.1) + ")");
       });
 
       next();
