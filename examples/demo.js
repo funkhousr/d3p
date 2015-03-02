@@ -1,13 +1,11 @@
-// Transition Presets
-d3p.make = {
-  "appear": d3p.transitions.appear({ duration: 500 }),
-  "popOut": d3p.transitions.popOut({ duration: 300 })
-};
+// Animation Presets
+d3p.animate.appear = d3p.transitions.appear({ duration: 500 });
+d3p.animate.popOut = d3p.transitions.popOut({ duration: 300 });
 
 // Slides
 d3p.slides = [
   [
-    function(stage, objects, make, next){
+    function(stage, objects, animate, next){
       objects.title = d3p.theme.default.group(stage, 0, -0.1);
       objects.title.append("text").text("d3p: D3 Present Framework").attr("class", "h1");
       
@@ -23,15 +21,17 @@ d3p.slides = [
         d3p.theme.phd.heading(objects.author, author[0], author[1]).attr("transform", "translate(0," + d3p.y(i * 0.1) + ")");
       });
 
+      animate.sequence("appear", [objects.title, objects.subtitle]);
+      animate.object("popOut", objects.author);
       next();
     }
   ],
   [
-    function(stage, objects, make, next){
+    function(stage, objects, animate, next){
       objects.title = stage.append("text").text("Intro").attr("x", "0").attr("y", "0");
-      make.appear(objects.title, next);
+      animate.appear(objects.title, next);
     },
-    function(stage, objects, make, next){
+    function(stage, objects, animate, next){
       objects.p2 = stage.append("text").text("And so on").attr("x", "0").attr("y", "10%");
       next();
     }
