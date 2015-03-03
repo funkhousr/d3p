@@ -29,6 +29,13 @@ svg.d3p text{
   baseline-shift: -7%;
 }
 
+svg.d3p text.left   { text-anchor: start; }
+svg.d3p text.middle { text-anchor: middle; }
+svg.d3p text.right  { text-anchor: end; }
+svg.d3p text.top    { dominant-baseline: hanging; }
+svg.d3p text.middle { dominant-baseline: middle; }
+svg.d3p text.bottom { dominant-baseline: text-after-edge; }
+
 svg.d3p text.h1{ font-size: 6em; }
 svg.d3p text.h2{ font-size: 2em; }
 svg.d3p text.h3{ font-size: 1.8em; }

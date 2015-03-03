@@ -17,28 +17,28 @@ d3p.slides = [
         d3p.theme.phd.heading(objects.author, author[0], author[1]).attr("transform", "translate(0," + d3p.y(i * 0.1) + ")");
       });
 
-      animate.sequence("fadeIn", [objects.title, objects.subtitle], { duration: 1000 });
-      animate.object("fadeIn", objects.author);
       next();
-    },
-    function(stage, objects, animate, next){
-      animate.parallel("popOut", objects);
-      next(true);
     }
   ],
   [
     function(stage, objects, animate, next){
-      objects.title = stage.append("text").text("Intro").attr("x", "0").attr("y", "0");
-      animate.object("fadeIn", objects.title);
+      objects.bg = d3p.theme.default.group(stage, -1, -1);
+      d3p.theme.default.image(objects.bg, "assets/background.jpg", d3p.width, d3p.height);
+      
+      objects.center = d3p.theme.default.group(stage, 0, 0);
+      d3p.theme.phd.heading(objects.center, "h2", "Center");
+      
+      objects.left = d3p.theme.default.group(stage, -0.8, -0.8);
+      d3p.theme.phd.heading(objects.left, "h2", "Top Left", "left", "top");
+      
+      objects.bottom = d3p.theme.default.group(stage, 0.8, 0.8);
+      d3p.theme.phd.heading(objects.bottom, "h2", "Bottom Right", "right", "bottom");
+
+      animate.object("fadeIn", objects.center);
+      animate.async("fadeIn", [objects.left, objects.bottom]);
       next();
     },
     function(stage, objects, animate, next){
-      objects.p2 = stage.append("text").text("And so on").attr("x", "0").attr("y", "10%");
-      animate.object("fadeIn", objects.p2);
-      next();
-    },
-    function(stage, objects, animate, next){
-      animate.parallel("fadeOut", objects);
       next();
     }
   ]
