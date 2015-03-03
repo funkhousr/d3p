@@ -56,6 +56,15 @@ d3p.slides = [
   ],
   [
     function(stage, objects, animate, next){
+      objects.bg      = d3p.theme.default.background.image(stage, "assets/drawing.svg");
+      objects.heading = d3p.theme.phd.block.heading(stage, "Image Loading", "assets/drawing.svg");
+      
+      animate.parallel("fadeIn", [objects.bg, objects.heading]);
+      next();
+    }
+  ],
+  [
+    function(stage, objects, animate, next){
       objects.bg      = d3p.theme.default.background.klass(stage, "color1");
       objects.heading = d3p.theme.phd.block.heading(stage, "Background Colors", "Color 1");
       
@@ -99,7 +108,68 @@ d3p.slides = [
       
       next();
     }
-  ]
+  ],
+
+  // TODO: Create convenient API that maps animations to layers and fragments
+  // consider: parallel animations for layer selections
+  // consider: sequential animations for layer selections from svgs
+  [
+    function(stage, objects, animate, next){
+      objects.heading = d3p.theme.phd.block.heading(stage, "SVG Layer Import", "assets/diagram.svg");
+      
+      objects.diagram = d3p.theme.default.group(stage, -1, -1);
+      d3p.theme.default.svg(objects.diagram, "assets/diagram.svg", function(){
+        objects.base   = objects.diagram.selectAll("#base > g");
+        objects.arrows = objects.diagram.selectAll("#arrows > g");
+        objects.arrows.style("opacity", 0);
+
+        animate.object("fadeIn", objects.base);
+        next();
+      });
+    },
+    function(stage, objects, animate, next){
+      animate.sequence("fadeIn", objects.arrows);
+      //animate.object("fadeIn", d3.select(objects.arrows[0][0]));
+      next();
+    },
+    function(stage, objects, animate, next){
+      animate.object("fadeIn", d3.select(objects.arrows[0][1]));
+      next();
+    },
+    function(stage, objects, animate, next){
+      animate.object("fadeIn", d3.select(objects.arrows[0][2]));
+      next();
+    }
+  ],
+  [
+    function(stage, objects, animate, next){
+      objects.heading = d3p.theme.phd.block.heading(stage, "SVG Import", "assets/drawing.svg");
+
+      var lineLength = function(line){
+        var dx = Math.abs(line.attr("x1") - line.attr("x2")),
+            dy = Math.abs(line.y1 - line.y2);
+        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+      };
+      
+      objects.svg = d3p.theme.default.group(stage, -0.2, -0.6);
+      d3p.theme.default.svg(objects.svg, "assets/house.svg", function(){
+        var paths = objects.svg.selectAll("path, line, polyline");
+        paths.each(function(){
+          var l = 0;
+          if(this.nodeName === "path") l = this.getTotalLength();
+          if(this.nodeName === "line") l = lineLength(d3.select(this));
+          d3.select(this).attr("stroke-dasharray", l + " " + l)
+            .attr("stroke-dashoffset", l)
+            .transition().duration(2000)
+              .attr("stroke-dashoffset", 0);
+        }),
+
+        
+            //animate.object("fadeIn", p);
+        next();
+      });
+    }
+  ],
 ];
 
 // Ready, go!
