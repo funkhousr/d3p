@@ -115,57 +115,29 @@ d3p.slides = [
   // consider: sequential animations for layer selections from svgs
   [
     function(stage, objects, animate, next){
-      objects.heading = d3p.theme.phd.block.heading(stage, "SVG Layer Import", "assets/diagram.svg");
-      
       objects.diagram = d3p.theme.default.group(stage, -1, -1);
-      d3p.theme.default.svg(objects.diagram, "assets/diagram.svg", function(){
-        objects.base   = objects.diagram.selectAll("#base > g");
-        objects.arrows = objects.diagram.selectAll("#arrows > g");
-        objects.arrows.style("opacity", 0);
-
-        animate.object("fadeIn", objects.base);
+      d3p.theme.default.svg.image(objects.diagram, "assets/diagram.svg", function(layers){
+        objects.info = layers.info;
+        objects.info.style("opacity", 0);
+        animate.sequence("fadeIn", [layers.base, layers.arrows]);
         next();
       });
+      
+      objects.heading = d3p.theme.phd.block.heading(stage, "SVG Layer Import", "assets/diagram.svg");
     },
     function(stage, objects, animate, next){
-      animate.sequence("fadeIn", objects.arrows);
-      //animate.object("fadeIn", d3.select(objects.arrows[0][0]));
-      next();
-    },
-    function(stage, objects, animate, next){
-      animate.object("fadeIn", d3.select(objects.arrows[0][1]));
-      next();
-    },
-    function(stage, objects, animate, next){
-      animate.object("fadeIn", d3.select(objects.arrows[0][2]));
+      animate.object("fadeIn", objects.info);
       next();
     }
   ],
   [
     function(stage, objects, animate, next){
       objects.heading = d3p.theme.phd.block.heading(stage, "SVG Import", "assets/drawing.svg");
-
-      var lineLength = function(line){
-        var dx = Math.abs(line.attr("x1") - line.attr("x2")),
-            dy = Math.abs(line.y1 - line.y2);
-        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-      };
       
-      objects.svg = d3p.theme.default.group(stage, -0.2, -0.6);
-      d3p.theme.default.svg(objects.svg, "assets/house.svg", function(){
-        var paths = objects.svg.selectAll("path, line, polyline");
-        paths.each(function(){
-          var l = 0;
-          if(this.nodeName === "path") l = this.getTotalLength();
-          if(this.nodeName === "line") l = lineLength(d3.select(this));
-          d3.select(this).attr("stroke-dasharray", l + " " + l)
-            .attr("stroke-dashoffset", l)
-            .transition().duration(2000)
-              .attr("stroke-dashoffset", 0);
-        }),
-
-        
-            //animate.object("fadeIn", p);
+      objects.drawing = d3p.theme.default.group(stage, -1, -1);
+      d3p.theme.default.svg.image(objects.drawing, "assets/drawing.svg", function(layers){
+        animate.parallel("drawPaths", [layers.cube, layers.form], { duration: 4000 })
+        animate.sequence("drawPaths", [layers.stroke1, layers.stroke2], { duration: 4000 })
         next();
       });
     }
