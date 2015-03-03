@@ -30,13 +30,14 @@ svg.d3p text{
 }
 
 svg.d3p text.left   { text-anchor: start; }
-svg.d3p text.middle { text-anchor: middle; }
+svg.d3p text.center { text-anchor: center; }
 svg.d3p text.right  { text-anchor: end; }
 svg.d3p text.top    { dominant-baseline: hanging; }
 svg.d3p text.middle { dominant-baseline: middle; }
 svg.d3p text.bottom { dominant-baseline: text-after-edge; }
 
-svg.d3p text.h1{ font-size: 6em; }
+svg.d3p text.h1{ font-size: 3em; }
+svg.d3p text.h1.title{ font-size: 6em; }
 svg.d3p text.h2{ font-size: 2em; }
 svg.d3p text.h3{ font-size: 1.8em; }
 svg.d3p text.h4{ font-size: 1.5em; }
@@ -50,12 +51,18 @@ svg.d3p text.h5{
   font-family: 'Open Sans Condensed', sans-serif;
   fill: white; 
 }
+svg.d3p text.h1{ fill: #0068B3;}
 
-svg.d3p text.h1{
- fill: #0068B3;
-}
+svg.d3p .white{ fill: #FFFFFF; }
+svg.d3p .black{ fill: #000000; }
+svg.d3p .color1{ fill: #0068B3; }
+svg.d3p .color2{ fill: #00ADEF; }
+svg.d3p .color3{ fill: #56B947; }
+svg.d3p .color4{ fill: #8CC63E; }
+svg.d3p .color5{ fill: #F7931D; }
+svg.d3p .color6{ fill: #F4B21E; }
 
-svg.d3p rect.h1{ fill: #0068B3; }
+svg.d3p rect.h1{ fill: #FFFFFF; }
 svg.d3p rect.h2{ fill: #00ADEF; }
 svg.d3p rect.h3{ fill: #56B947; }
 svg.d3p rect.h4{ fill: #8CC63E; }

@@ -3,12 +3,12 @@ d3p.slides = [
   [
     function(stage, objects, animate, next){
       objects.title = d3p.theme.default.group(stage, 0, -0.1);
-      objects.title.append("text").text("d3p: D3 Present Framework").attr("class", "h1");
+      d3p.theme.phd.title(objects.title, "d3p: D3 Present Framework");
       
       objects.subtitle = d3p.theme.default.group(stage, 0, 0.1);
       d3p.theme.phd.heading(objects.subtitle, "h2", "Using d3.js and SVG to create animated presentations in the browser");
 
-      objects.author = d3p.theme.default.group(stage, 0, 0.8);
+      objects.author = d3p.theme.default.group(stage, 0, 0.7);
       [
         ["h3", "Thomas Fankhauser"],
         ["h4", "tommy@southdesign.de"],
@@ -22,23 +22,81 @@ d3p.slides = [
   ],
   [
     function(stage, objects, animate, next){
-      objects.bg = d3p.theme.default.group(stage, -1, -1);
-      d3p.theme.default.image(objects.bg, "assets/background.jpg", d3p.width, d3p.height);
-      
-      objects.center = d3p.theme.default.group(stage, 0, 0);
-      d3p.theme.phd.heading(objects.center, "h2", "Center");
-      
-      objects.left = d3p.theme.default.group(stage, -0.8, -0.8);
-      d3p.theme.phd.heading(objects.left, "h2", "Top Left", "left", "top");
-      
-      objects.bottom = d3p.theme.default.group(stage, 0.8, 0.8);
-      d3p.theme.phd.heading(objects.bottom, "h2", "Bottom Right", "right", "bottom");
+      [
+        [1, -1, "right", "top"],
+        [1, 0, "right", "middle"],
+        [1, 1, "right", "bottom"],
 
-      animate.object("fadeIn", objects.center);
-      animate.async("fadeIn", [objects.left, objects.bottom]);
+        [0, -1, "center", "top"],
+        [0, 0, "center", "middle"],
+        [0, 1, "center", "bottom"],
+        
+        [-1, -1, "left", "top"],
+        [-1, 0, "left", "middle"],
+        [-1, 1, "left", "bottom"]
+      ].forEach(function(d){
+        var title = d[2] + "-" + d[3];
+        objects[title] = d3p.theme.default.group(stage, d[0], d[1]);
+        d3p.theme.phd.heading(objects[title], "h3", title, d[2], d[3]);
+      });
+
+      objects.heading = d3p.theme.phd.block.heading(stage, "Positioning of Elements", "Relative Groups and Text Align");
+
       next();
-    },
+    }
+  ],
+  [
     function(stage, objects, animate, next){
+      objects.bg      = d3p.theme.default.background.image(stage, "assets/background.jpg");
+      objects.heading = d3p.theme.phd.block.heading(stage, "Image Loading", "assets/background.jpg");
+      
+      animate.parallel("fadeIn", [objects.bg, objects.heading]);
+      next();
+    }
+  ],
+  [
+    function(stage, objects, animate, next){
+      objects.bg      = d3p.theme.default.background.klass(stage, "color1");
+      objects.heading = d3p.theme.phd.block.heading(stage, "Background Colors", "Color 1");
+      
+      animate.parallel("fadeIn", [objects.bg, objects.heading]);
+      next();
+    }
+  ],
+  [
+    function(stage, objects, animate, next){
+      objects.bg      = d3p.theme.default.background.klass(stage, "color2");
+      objects.heading = d3p.theme.phd.block.heading(stage, "Background Colors", "Color 2");
+      
+      animate.parallel("fadeIn", [objects.bg, objects.heading]);
+      next();
+    }
+  ],
+  [
+    function(stage, objects, animate, next){
+      objects.heading = d3p.theme.phd.block.heading(stage, "Animations", "Sequential and Parallel");
+      
+      [
+        ["s1", -0.7, -0.3, "This"],
+        ["s2", 0, -0.3, "is"],
+        ["s3", 0.7, -0.3, "Sequential"]
+      ].forEach(function(b){
+        objects[b[0]] = d3p.theme.default.bubble(stage, b[1], b[2], 80, "color3");
+        d3p.theme.default.text(objects[b[0]], b[3], "center middle white", "1.8em");
+      });
+      
+      [
+        ["p1", -0.7, 0.5, "This"],
+        ["p2", 0, 0.5, "is"],
+        ["p3", 0.7, 0.5, "Parallel"]
+      ].forEach(function(b){
+        objects[b[0]] = d3p.theme.default.bubble(stage, b[1], b[2], 80, "color4");
+        d3p.theme.default.text(objects[b[0]], b[3], "center middle white", "1.8em");
+      });
+
+      animate.sequence("fadeIn", [objects.s1, objects.s2, objects.s3]);
+      animate.parallel("fadeIn", [objects.p1, objects.p2, objects.p3]);
+      
       next();
     }
   ]
