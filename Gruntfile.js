@@ -17,7 +17,12 @@ module.exports = function(grunt) {
       },
       d3p: {
         files: {
-          '<%= pkg.name %>.min.js': ['<%= pkg.name %>.js']
+          '<%= pkg.name %>.min.js': ['<%= pkg.name %>.js'],
+          '<%= pkg.name %>.pack.min.js': [
+            'bower_components/d3/d3.min.js',
+            'bower_components/bower-webfontloader/webfont.js',
+            '<%= pkg.name %>.js'
+          ]
         }
       }
     }
