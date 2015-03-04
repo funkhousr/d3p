@@ -86,101 +86,30 @@ var d3p = {
   y: function(relative){ return relative * (d3p.height/2); }
 };
 
-// Helpers - TODO: input: array, single object, all objects -> output array
-d3p.helpers = {
-  toArray: function(objects){
-    if(Array.isArray(objects)) return objects;
-    var a = [];
-    for(var key in objects){
-      a.push(objects[key]);
-    }
-    return a;
+d3p.animate = {
+  sync: function(key, objects, params){
+    d3p.animations.queue.push({
+      type    : "sync",
+      key     : key,
+      objects : d3p.helpers.toArray(objects),
+      params  : params || {}
+    });
+  },
+  async: function(key, objects, params){
+    d3p.animations.queue.push({
+      type    : "async",
+      key     : key,
+      objects : d3p.helpers.toArray(objects),
+      params  : params || {}
+    });
+  },
+  object: function(key, object, params){
+    d3p.animate.sync(key, [object], params);
   }
 };
+d3p.animate.sequence = d3p.animate.sync;
+d3p.animate.parallel = d3p.animate.async;
 
-// Runner
-d3p.runner = {
-  queue: [],
-  add: function(f){
-    d3p.runner.queue.push(f);
-    if(!d3p.running) d3p.runner.process();
-  },
-  process: function(next){
-    if(next) d3p.next();
-    var f = d3p.runner.queue.shift();
-    if(f){
-      d3p.running = true;
-      f(d3p.runner.process);
-    } else{
-      d3p.running = false;
-    }
-  }
-};
-
-// Transitions
-d3p.transitions = {
-  fadeIn: {
-    setup: function(object, params){
-      object.style("opacity", 0); 
-    },
-    run:   function(object, params, next){
-      object.transition()
-        .duration(params.duration || 500)
-        .style("opacity", 1)
-        .each("end", next);
-    }
-  },
-  fadeOut: {
-    run:   function(object, params, next){
-      object.transition()
-        .duration(params.duration || 500)
-        .style("opacity", 0)
-        .each("end", next);
-    }
-  },
-  popIn: {
-    setup: function(object, params){
-      object.style("opacity", 0).attr("transform", "scale(" + (params.scale || 4) + ")");
-    },
-    run: function(object, params, next){
-      object.transition()
-        .duration(params.duration || 500)
-        .attr("transform", "scale(1)")
-        .style("opacity", 1)
-        .each("end", next);
-    }
-  },
-  popOut: {
-    run: function(object, params, next){
-      object.transition()
-        .duration(params.duration || 500)
-        .attr("transform", "scale(" + (params.scale || 4) + ")")
-        .style("opacity", 0)
-        .each("end", next);
-    }
-  },
-  drawPaths: {
-    setup: function(object, params){
-      d3p.theme.default.svg.polylineToPath(object);
-      d3p.theme.default.svg.lineToPath(object);
-      object.selectAll("path").each(function(){
-        var l = this.getTotalLength();
-        d3.select(this).attr("stroke-dasharray", l + " " + l).attr("stroke-dashoffset", l);
-      });
-    },
-    run: function(object, params, next){
-      object.selectAll("path").each(function(){
-        var l = this.getTotalLength();
-        d3.select(this).transition()
-        .duration(params.duration || 2000)
-        .attr("stroke-dashoffset", 0)
-        .each("end", next);
-      });
-    }
-  }
-};
-
-// Animations
 d3p.animations = {
   queue: [],
   transaction: [],
@@ -227,32 +156,35 @@ d3p.animations = {
   }
 };
 
-// Animate API
-d3p.animate = {
-  sync: function(key, objects, params){
-    d3p.animations.queue.push({
-      type    : "sync",
-      key     : key,
-      objects : d3p.helpers.toArray(objects),
-      params  : params || {}
-    });
-  },
-  async: function(key, objects, params){
-    d3p.animations.queue.push({
-      type    : "async",
-      key     : key,
-      objects : d3p.helpers.toArray(objects),
-      params  : params || {}
-    });
-  },
-  object: function(key, object, params){
-    d3p.animate.sync(key, [object], params);
+d3p.helpers = {
+  toArray: function(objects){
+    if(Array.isArray(objects)) return objects;
+    var a = [];
+    for(var key in objects){
+      a.push(objects[key]);
+    }
+    return a;
   }
 };
-d3p.animate.sequence = d3p.animate.sync;
-d3p.animate.parallel = d3p.animate.async;
 
-// Themes Container
+d3p.runner = {
+  queue: [],
+  add: function(f){
+    d3p.runner.queue.push(f);
+    if(!d3p.running) d3p.runner.process();
+  },
+  process: function(next){
+    if(next) d3p.next();
+    var f = d3p.runner.queue.shift();
+    if(f){
+      d3p.running = true;
+      f(d3p.runner.process);
+    } else{
+      d3p.running = false;
+    }
+  }
+};
+
 d3p.theme = {
   default: {
     translate: function(object, x, y){
@@ -335,6 +267,68 @@ d3p.theme = {
       image: function(stage, src){
         return d3p.theme.default.image(stage, src, d3p.width, d3p.height).attr("y", d3p.y(-1)).attr("x", d3p.x(-1));
       }
+    }
+  }
+};
+
+d3p.transitions = {
+  fadeIn: {
+    setup: function(object, params){
+      object.style("opacity", 0); 
+    },
+    run:   function(object, params, next){
+      object.transition()
+        .duration(params.duration || 500)
+        .style("opacity", 1)
+        .each("end", next);
+    }
+  },
+  fadeOut: {
+    run:   function(object, params, next){
+      object.transition()
+        .duration(params.duration || 500)
+        .style("opacity", 0)
+        .each("end", next);
+    }
+  },
+  popIn: {
+    setup: function(object, params){
+      object.style("opacity", 0).attr("transform", "scale(" + (params.scale || 4) + ")");
+    },
+    run: function(object, params, next){
+      object.transition()
+        .duration(params.duration || 500)
+        .attr("transform", "scale(1)")
+        .style("opacity", 1)
+        .each("end", next);
+    }
+  },
+  popOut: {
+    run: function(object, params, next){
+      object.transition()
+        .duration(params.duration || 500)
+        .attr("transform", "scale(" + (params.scale || 4) + ")")
+        .style("opacity", 0)
+        .each("end", next);
+    }
+  },
+  drawPaths: {
+    setup: function(object, params){
+      d3p.theme.default.svg.polylineToPath(object);
+      d3p.theme.default.svg.lineToPath(object);
+      object.selectAll("path").each(function(){
+        var l = this.getTotalLength();
+        d3.select(this).attr("stroke-dasharray", l + " " + l).attr("stroke-dashoffset", l);
+      });
+    },
+    run: function(object, params, next){
+      object.selectAll("path").each(function(){
+        var l = this.getTotalLength();
+        d3.select(this).transition()
+        .duration(params.duration || 2000)
+        .attr("stroke-dashoffset", 0)
+        .each("end", next);
+      });
     }
   }
 };

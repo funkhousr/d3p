@@ -109,10 +109,6 @@ d3p.slides = [
       next();
     }
   ],
-
-  // TODO: Create convenient API that maps animations to layers and fragments
-  // consider: parallel animations for layer selections
-  // consider: sequential animations for layer selections from svgs
   [
     function(stage, objects, animate, next){
       objects.diagram = d3p.theme.default.group(stage, -1, -1);
