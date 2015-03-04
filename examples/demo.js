@@ -136,7 +136,7 @@ d3p.slides = [
       
       objects.drawing = d3p.theme.default.group(stage, -1, -1);
       d3p.theme.default.svg.image(objects.drawing, "assets/drawing.svg", function(layers){
-        animate.parallel("drawPaths", [layers.cube, layers.form], { duration: 4000 })
+        animate.parallel("drawPaths", [layers.cube, layers.form], { duration: 2000 })
         animate.sequence("drawPaths", [layers.stroke1, layers.stroke2], { duration: 4000 })
         next();
       });
@@ -144,7 +144,7 @@ d3p.slides = [
   ],
 ];
 
-// Ready, go!
+// Wait for webfonts, then go!
 document.addEventListener('DOMContentLoaded', function(){
   WebFont.load({
     custom: { families: ['Open Sans Condensed:n3,n7,i3'] },
