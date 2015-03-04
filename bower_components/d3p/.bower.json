@@ -1,0 +1,49 @@
+{
+  "name": "d3p",
+  "version": "0.0.1",
+  "homepage": "https://github.com/southdesign/d3p",
+  "authors": [
+    "Thomas Fankhauser <tommy@southdesign.de>"
+  ],
+  "description": "D3 Present Framework",
+  "main": "d3p.min.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "d3",
+    "present",
+    "tool",
+    "svg",
+    "browser"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "src",
+    ".DS_Store",
+    ".git",
+    ".gitignore",
+    ".npmignore",
+    "package.json",
+    "Gruntfile.json"
+  ],
+  "dependencies": {
+    "d3": "~3.5.5",
+    "bower-webfontloader": "~1.5.13"
+  },
+  "_release": "0.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.1",
+    "commit": "976b186bc7827769296a0b5c2618b111effcb059"
+  },
+  "_source": "git://github.com/southdesign/d3p.git",
+  "_target": "~0.0.1",
+  "_originalSource": "d3p",
+  "_direct": true
+}
