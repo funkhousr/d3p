@@ -6,25 +6,8 @@ var d3p = {
     d3p.width    = 1280;
     d3p.height   = 720;
     
-    // Stage Setup
-    var svg = d3.select("body").append("svg").attr("class", "d3p"),
-        stageTranslate = svg.append("g"),
-        stageScale = stageTranslate.append("g");
-    d3p.stage = stageScale;
-
-    // Stage Resize
-    var stageResize = function(){
-      var sx = window.innerWidth / d3p.width,
-          sy = window.innerHeight / d3p.height,
-          s  = sx < sy ? sx : sy;
-      svg.attr("width", window.innerWidth).attr("height", window.innerHeight);
-      stageTranslate.attr("transform", "translate(" + window.innerWidth/2 + ", " + window.innerHeight/2 + ")")
-      stageScale.attr("transform", "scale(" + s + ")");
-    };
-
-    // Automatic Resizing
-    stageResize();
-    window.onresize = stageResize;
+    if(d3p.print.setup()) return;
+    d3p.stage.setup();
     
     // Keymapping
     document.onkeydown = function(event){
@@ -41,7 +24,7 @@ var d3p = {
     window.location.hash = "#" + d3p.slide;
 
     d3p.runner.add(function(done){
-      d3p.slides[d3p.slide][d3p.fragment](d3p.stage, d3p.objects, d3p.animate, done);
+      d3p.slides[d3p.slide][d3p.fragment](d3p.stage.main, d3p.objects, d3p.animate, done);
     });
     d3p.runner.add(function(done){
       d3p.animations.run();
