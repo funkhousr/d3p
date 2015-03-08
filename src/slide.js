@@ -19,14 +19,14 @@ d3p.slide = {
 
     d3p.stage.clear();
     d3p.slide.setup();
-    d3p.slides[d3p.slide.index](d3p.slide.current);
-    d3p.animations.run();
+    d3p.slides[d3p.slide.index](d3p.slide.current, d3p.animations.run);
+    if(d3p.slides[d3p.slide.index].length <= 1) d3p.animations.run();
   },
   fragment: {
     show: function(){
       var fragment = d3p.slide.current.fragments.shift();
-      fragment(d3p.slide.current);
-      d3p.animations.run();
+      fragment(d3p.slide.current, d3p.animations.run);
+      if(fragment.length <= 1) d3p.animations.run();
     }
   },
   next: function(){
