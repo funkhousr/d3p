@@ -23,8 +23,9 @@ d3p.slide = {
   },
   fragment: {
     show: function(){
-      // pop fragment
-      // run animations
+      var fragment = d3p.slide.current.fragments.shift();
+      fragment(d3p.slide.current);
+      d3p.animations.run();
     }
   },
   next: function(){

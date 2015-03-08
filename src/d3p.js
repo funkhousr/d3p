@@ -20,6 +20,6 @@ var d3p = {
     d3p.x        = d3p.stage.x;
     d3p.y        = d3p.stage.y;
 
-    d3p.slide.next();
+    d3p.slide.show();
   }
 };
