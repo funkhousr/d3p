@@ -1,65 +1,58 @@
-// Animate API
-d3p.animate = function(key, objects, params){
-  // objects are parallel
-  // each added job is implicitly sequential
-  d3p.animations.queue.push({
-    key     : key,
-    objects : d3p.helpers.toArray(objects),
-    params  : params || {}
-  });
-  return { 
-    and:  d3p.animate,
-    then: d3p.animate
-  }
-};
-
 // Perform Animations
 d3p.animations = {
-  queue: [],
-  transaction: [],
+  blocks: [],
+  api: {
+    async: function(key, objects, params){
+      var b = d3p.animations.blocks.length-1;
+      if(d3p.animations.blocks.length <= 0 || d3p.animations.blocks[b].type === "sequential"){
+        d3p.animations.blocks.push({
+          type: "parallel",
+          objects: [],
+          n: 0
+        });
+        b++;
+      }
+      d3p.helpers.toArray(objects).forEach(function(object){
+        d3p.animations.blocks[b].objects.push({ key: key, object: object, params: (params || {}) });
+        d3p.animations.blocks[b].n++;
+      });
+      return d3p.animations.api;
+    },
+    sync: function(key, objects, params){
+      d3p.helpers.toArray(objects).forEach(function(object){
+        d3p.animations.blocks.push({
+          type: "sequential",
+          objects: [{ key: key, object: object, params: (params || {}) }],
+          n: 1
+        });
+      });
+      return d3p.animations.api;
+    }
+  },
   run: function(){
     d3p.animations.setup();
+    d3p.animations.start();
+  },
+  start: function(){
+    if(d3p.animations.blocks.length <= 0) return;
+    var block = d3p.animations.blocks.shift(),
+        finished = 0,
+        check = function(){
+          finished++;
+          if(finished >= block.n){
+            d3p.animations.start();
+          }
+        };
 
-    // each job = sequential
-    // each job.objects = parallel
-
-    var animation;
-    while(animation = d3p.animations.queue.shift()){
-      d3p.animations[animation.type](animation);
-    }
-    d3p.animations.commit();
+    block.objects.forEach(function(object){
+        d3p.transitions[object.key].run(object.object, object.params, check);
+    });
   },
   setup: function(){
-    d3p.animations.queue.forEach(function(animation){
-      animation.objects.forEach(function(object){
-        if(d3p.transitions[animation.key].setup) d3p.transitions[animation.key].setup(object, animation.params);
+    d3p.animations.blocks.forEach(function(block){
+      block.objects.forEach(function(object){
+        d3p.transitions[object.key].setup(object.object, object.params);
       });
-    });
-  },
-  sync: function(animation){
-    d3p.animations.commit();
-    animation.objects.forEach(function(object){
-      d3p.runner.add(function(done){
-        d3p.transitions[animation.key].run(object, animation.params, done);
-      });
-    });
-  },
-  async: function(animation){
-    d3p.animations.transaction.push(animation);
-  },
-  commit: function(){
-    if(d3p.animations.transaction.length == 0) return;
-    d3p.runner.add(function(done){
-      var animation, n = f = 0;
-      while(animation = d3p.animations.transaction.shift()){
-        n += animation.objects.length;
-        animation.objects.forEach(function(object){
-          d3p.transitions[animation.key].run(object, animation.params, function(){
-            f++;
-            if(f >= n) done();
-          });
-        });
-      }
     });
   }
 };

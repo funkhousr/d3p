@@ -1,17 +1,17 @@
 d3p.slides.push(function(slide){
   
-  slide.objects.title = d3p.theme.default.group(slide.stage, 0, -0.1);
+  slide.objects.title = slide.add.group(slide.stage, 0, -0.1);
   d3p.theme.phd.title(slide.objects.title, "d3p: D3 Present Framework");
+    
+  slide.objects.subtitle = slide.add.group(slide.stage, 0, 0.1);
+  d3p.theme.phd.heading(slide.objects.subtitle, "h2", "Using d3.js and SVG to create animated presentations in the browser");
 
-  // Fragments
-  slide.fragments.push(function(fragment){
-    slide.objects.subtitle = d3p.theme.default.group(slide.stage, 0, 0.1);
-    d3p.theme.phd.heading(slide.objects.subtitle, "h2", "Using d3.js and SVG to create animated presentations in the browser");
-    //fragment.anmiate.object("fadeIn", slide.objects.title);
-  });
+  slide.animate
+    .sync("fadeIn", [slide.objects.title])
+    .sync("fadeIn", [slide.objects.subtitle]);
 
   slide.fragments.push(function(fragment){
-    slide.objects.author = d3p.theme.default.group(slide.stage, 0, 0.7);
+    slide.objects.author = slide.add.group(slide.stage, 0, 0.7);
     [
       ["h3", "Thomas Fankhauser"],
       ["h4", "tommy@southdesign.de"],
@@ -19,12 +19,9 @@ d3p.slides.push(function(slide){
     ].forEach(function(author, i){
       d3p.theme.phd.heading(slide.objects.author, author[0], author[1]).attr("transform", "translate(0," + d3p.y(i * 0.1) + ")");
     });
-    //fragment.anmiate("fadeIn", slide.objects.title);
-  });
 
-  //slide
-  //  .animate("fadeIn", [slide.objects.title, slide.objects.subtitle])
-  //  .then("fadeIn", slide.objects.author);
+    fragment.animate.sync("fadeIn", [slide.objects.author]);
+  });
 });
 
 // Slide 2
@@ -43,10 +40,11 @@ d3p.slides.push(function(slide){
     [-1, 1, "left", "bottom"]
   ].forEach(function(d){
     var title = d[2] + "-" + d[3];
-    slide.objects[title] = d3p.theme.default.group(slide.stage, d[0], d[1]);
+    slide.objects[title] = slide.add.group(slide.stage, d[0], d[1]);
     d3p.theme.phd.heading(slide.objects[title], "h3", title, d[2], d[3]);
+    slide.animate.sync("fadeIn", [slide.objects[title]], { duration: 300 });
   });
-
+  
   slide.objects.heading = d3p.theme.phd.block.heading(slide.stage, "Positioning of Elements", "Relative Groups and Text Align");
 });
 

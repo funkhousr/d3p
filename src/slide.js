@@ -1,5 +1,5 @@
 d3p.slide = {
-  index: -1,
+  index: 0,
   locationHash: function(){
     var index = parseInt(window.location.hash.substr(1));
     if(!index) return;
@@ -8,7 +8,8 @@ d3p.slide = {
   setup: function(){
     d3p.slide.current = {
       stage     : d3p.stage.main,
-      animate   : d3p.animate,
+      animate   : d3p.animations.api,
+      add       : d3p.theme.default,
       objects   : [],
       fragments : []
     };
