@@ -1,11 +1,11 @@
 d3p.slides.push(function(slide){
-  slide.objects.title = slide.add.group(slide.stage, 0, -0.1);
+  slide.objects.title = slide.make.group(slide.stage, 0, -0.1);
   d3p.theme.phd.title(slide.objects.title, "d3p: Presentation Template");
 
-  slide.objects.subtitle = slide.add.group(slide.stage, 0, 0.1);
+  slide.objects.subtitle = slide.make.group(slide.stage, 0, 0.1);
   d3p.theme.phd.heading(slide.objects.subtitle, "h2", "Start your presentation from here");
 
-  slide.objects.author = slide.add.group(slide.stage, 0, 0.7);
+  slide.objects.author = slide.make.group(slide.stage, 0, 0.7);
   [
     ["h3", "Your Name"],
     ["h4", "mail@provider.com"],
@@ -19,13 +19,13 @@ d3p.slides.push(function(slide){
   slide.objects.heading = d3p.theme.phd.block.heading(slide.stage, "Heading", "Subheading");
 
   slide.fragments.push(function(){
-    slide.objects.go = slide.add.group(slide.stage, 0, 0);
+    slide.objects.go = slide.make.group(slide.stage, 0, 0);
     d3p.theme.phd.heading(slide.objects.go, "h3", "Let's go", "center", "middle");
   });
 });
 
 d3p.slides.push(function(slide){
-  slide.objects.bg = slide.add.background.image(slide.stage, "assets/background.jpg");
+  slide.objects.bg = slide.make.background.image(slide.stage, "assets/background.jpg");
   slide.objects.heading = d3p.theme.phd.block.heading(slide.stage, "Image Background", "assets/background.jpg");
 
   slide.animate.async("fadeIn", [slide.objects.bg, slide.objects.heading]);

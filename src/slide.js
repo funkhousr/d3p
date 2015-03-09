@@ -9,7 +9,7 @@ d3p.slide = {
     d3p.slide.current = {
       stage     : d3p.stage.main,
       animate   : d3p.animations.api,
-      add       : d3p.theme.default,
+      make      : d3p.theme.default,
       objects   : [],
       fragments : []
     };
