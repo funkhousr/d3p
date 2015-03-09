@@ -15,25 +15,34 @@ d3p does not need to be installed. Just create a folder for each new presentatio
 
 ## Presentation
 
-Presentations are created using JS with d3 and SVG. The default structure for slides is:
+Presentations are created in a `slides.js` with d3 and SVG. `d3p.slides` is an array of slide functions:
 
-    d3p.slides = [
-    	// Slide 1
-    	[
-    		// Fragment A
-    		function(stage, objects, animate, next){ //... },
-    		
-    		// Fragment B
-    		function(stage, objects, animate, next){ //... },
-    		
-    		// Fragment C
-    		function(stage, objects, animate, next){ //... }
-    	],
-    	// Slide 2
-    	[
-    		// ...
-    	]
-    ];
+    // Slide 1
+    d3p.slides.push(function(slide){
+      // d3 objects
+      // animations
+      
+      // fragment
+      slide.fragments.push(function(fragment){
+        // d3 objects
+        // animations
+      });
+      
+      // fragment
+      slide.fragments.push(function(fragment){
+        // d3 objects
+        // animations
+      });
+    });
+
+    // Slide 2
+    d3p.slides.push(function(slide){
+      // d3 objects
+      // animations
+      
+      // ...
+    });
+
 
 For an example, see the demo presentation [slides.js](https://github.com/southdesign/d3p/blob/master/template/slides.js).
 
@@ -55,7 +64,7 @@ So a theme is not only style, but also reusable functionality.
 
 ### Slide Array
 
-* **d3p.slides**: is an array of fragment functions. At least one fragment function needs to be present. The first fragment is displayed automatically, where the subsequent fragments are displayed via navigation.
+* **d3p.slides**: is an array of slide functions.
 
 ### Navigation
 
@@ -69,50 +78,53 @@ Both functions convert a relative translation to an absolute where `0,0` is the 
 * **d3p.x(floatValue)**: Returns the absolute translation where `-1 = left` and `1 = right`.
 * **d3p.y(floatValue)**: Returns the absolute translation where `-1 = top` and `1 = bottom`.
 
-### Fragment Function
+### Slide and Fragment Function
 
-* **function(stage, objects, animate, next){}**: Is a function that draw one fragment of a slide. 
-	`stage`: Is the d3 selection of the root svg element. Append to this stage to add objects to the stage.
-	
-	`objects`: Is a JS object to store created objects that need to be reused in subsequent fragments.
-	
-	`animate`: Exposes the animate API introduced in the next section.
-	
-	`next`: Needs to be called when the fragment including all animations are setup and finished. If `next(true)` is called, the fragment automatically advances to the next step.
+The slide and fragment function `function(slide, callback*){}` are equal and get passed a slide object and an optional callback that has to be consumed if injected.
 
-Do create a simple circle the fragment function looks like this:
+The slide object has the following attributes:
+
+* **slide.stage**: Is the d3 selection of the root svg element. Append to this stage to add objects to the stage.
+* **slide.objects**: Is a object to store created objects that need to be reused in subsequent fragments.
+* **slide.fragments**: Is an array to store fragment functions for the slide.
+* **slide.animate**: Exposes the animate API introduced in the next section.
+* **slide.make**: Exposes the default theme to easily add groups, backgrounds, images, etc.
+
+
+To create a simple circle the fragment function looks like this:
     
-    function(stage, objects, animate, next){
-    	objects.circle = stage.append("circle").attr("r", 20);
-    	next();
-    }
-
-If the next fragment should increase the size of the circle:
-
-    function(stage, objects, animate, next){
-    	objects.circle.transition().attr("r", 50);
-    	next();
+    function(slide){
+    	slide.objects.circle = slide.stage.append("circle").attr("r", 20);
+    	
+    	// If the next fragment should increase the size of the circle
+    	slide.fragments.push(function(fragment){
+    		fragment.objects.circle.transition().attr("r", 50);
+    	});
     }
 	
 
 ### Animate API
 
-The animation API is exposed to a fragemtn for object animation. It triggers transitions that are either included in d3p, or custom created in a theme or for this special slideset only.
+The animation API is exposed to `slide.animate`. It triggers transitions that are either included in d3p, or custom created in a theme or for this special slideset only.
 
-* **animate.object(transition, object, params*)**: Applies the transition to the object.
-* **animate.sequence(transition, [objects], params*)**: Applies the given transition to all provided objects in the array in a sequential order. This means that the animations are chained.
-* **animate.parallel(transition, [objects], params*)**: Applies the given transition to all provided objects in the array in parallel and waits for the longest to finish.
+* **animate.sync(transition, [objects], params*)**: Adds a blocking (sequential) animation
+* **animate.async(transition, [objects], params*)**: Adds a non-blocking (parallel) animation
 
-All params are optional where transition implementations should provide default values. Sequence and parallel blocks can be mixed during calls, e.g.:
+Animations can be added stepwise or chained:
 
-
-    function(stage, objects, animate, next){
+    function(slide){
     	// setup a-f
     	
-    	animate.parallel("fadeIn", [objects.a, objects.b]);
-    	animate.sequence("fadeIn", [objects.c, objects.d]);
-    	animate.parallel("fadeIn", [objects.e, objects.f]);
-    	next();
+    	// stepwise
+    	slide.animate.async("fadeIn", [objects.a, objects.b]);
+    	slide.animate.sync("fadeIn", [objects.c, objects.d]);
+    	slide.animate.async("fadeIn", [objects.e, objects.f]);
+    	
+    	// or chained
+    	slide.animate
+    		.async("fadeIn", [objects.a, objects.b])
+    		.sync("fadeIn", [objects.c, objects.d])
+    		.async("fadeIn", [objects.e, objects.f]);
     }
     
 This expands to 4 animation steps:
@@ -124,7 +136,7 @@ This expands to 4 animation steps:
 
 ### Default Theme
 
-The default theme provides common functionalities for all fragments and can be accessed via **d3p.theme.default.***.
+The default theme provides common functionalities for all fragments and can be accessed via `slide.make`:
 
 * **translate(object, x, y)**: Translates an object by the relative `x` and `y` positions.
 * **group(parent, x, y, klass)**: Creates a new group and translates it relatively.

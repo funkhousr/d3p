@@ -1,157 +1,84 @@
 var d3p = {
+  slides: [],
   init: function(){
-    d3p.objects  = {};
-    d3p.slide    = 0;
-    d3p.fragment = 0;
     d3p.width    = 1280;
     d3p.height   = 720;
     
-    // Stage Setup
-    var svg = d3.select("body").append("svg").attr("class", "d3p"),
-        stageTranslate = svg.append("g"),
-        stageScale = stageTranslate.append("g");
-    d3p.stage = stageScale;
-
-    // Stage Resize
-    var stageResize = function(){
-      var sx = window.innerWidth / d3p.width,
-          sy = window.innerHeight / d3p.height,
-          s  = sx < sy ? sx : sy;
-      svg.attr("width", window.innerWidth).attr("height", window.innerHeight);
-      stageTranslate.attr("transform", "translate(" + window.innerWidth/2 + ", " + window.innerHeight/2 + ")")
-      stageScale.attr("transform", "scale(" + s + ")");
-    };
-
-    // Automatic Resizing
-    stageResize();
-    window.onresize = stageResize;
+    d3p.stage.setup();
+    d3p.slide.setup();
+    d3p.slide.locationHash();
     
     // Keymapping
     document.onkeydown = function(event){
       if(event.which == 39) d3p.next();
       if(event.which == 37) d3p.previous();
     }
-    
-    // Hash
-    d3p.show(parseInt(window.location.hash.substr(1)), 0);
-  },
-  show: function(slide, fragment){
-    d3p.slide            = slide ? slide : 0;
-    d3p.fragment         = fragment ? fragment : 0;
-    window.location.hash = "#" + d3p.slide;
 
-    d3p.runner.add(function(done){
-      d3p.slides[d3p.slide][d3p.fragment](d3p.stage, d3p.objects, d3p.animate, done);
-    });
-    d3p.runner.add(function(done){
-      d3p.animations.run();
-      done();
-    });
-  },
-  next: function(){
-    // Fragment
-    if(d3p.fragment < d3p.slides[d3p.slide].length-1){
-      d3p.show(d3p.slide, d3p.fragment+1);
-      return;
-    }
+    // Simplify API
+    d3p.next     = d3p.slide.next;
+    d3p.previous = d3p.slide.previous;
+    d3p.x        = d3p.stage.x;
+    d3p.y        = d3p.stage.y;
 
-    // Slide
-    if(d3p.slide < d3p.slides.length-1){
-      d3p.runner.add(d3p.clear);
-      d3p.show(d3p.slide+1, 0);
-    }
-  },
-  previous: function(){
-    // Fragment
-    if(d3p.fragment >= 1){
-      d3p.runner.add(d3p.clear);
-      d3p.show(d3p.slide, 0);
-      return;
-    }
-
-    // Slide
-    if(d3p.slide > 0){
-      d3p.runner.add(d3p.clear);
-      d3p.show(d3p.slide-1, 0);
-    }
-  },
-  clear: function(done){
-    for(var name in d3p.objects){
-      d3p.objects[name].remove();
-    }
-    d3p.objects = {};
-    done();
-  },
-  x: function(relative){ return relative * (d3p.width/2); },
-  y: function(relative){ return relative * (d3p.height/2); }
-};
-
-d3p.animate = {
-  sync: function(key, objects, params){
-    d3p.animations.queue.push({
-      type    : "sync",
-      key     : key,
-      objects : d3p.helpers.toArray(objects),
-      params  : params || {}
-    });
-  },
-  async: function(key, objects, params){
-    d3p.animations.queue.push({
-      type    : "async",
-      key     : key,
-      objects : d3p.helpers.toArray(objects),
-      params  : params || {}
-    });
-  },
-  object: function(key, object, params){
-    d3p.animate.sync(key, [object], params);
+    d3p.slide.show();
   }
 };
-d3p.animate.sequence = d3p.animate.sync;
-d3p.animate.parallel = d3p.animate.async;
 
+// Perform Animations
 d3p.animations = {
-  queue: [],
-  transaction: [],
-  run: function(){
-    var animation;
-    d3p.animations.setup();
-    while(animation = d3p.animations.queue.shift()){
-      d3p.animations[animation.type](animation);
+  blocks: [],
+  api: {
+    async: function(key, objects, params){
+      var b = d3p.animations.blocks.length-1;
+      if(d3p.animations.blocks.length <= 0 || d3p.animations.blocks[b].type === "sequential"){
+        d3p.animations.blocks.push({
+          type: "parallel",
+          objects: [],
+          n: 0
+        });
+        b++;
+      }
+      d3p.helpers.toArray(objects).forEach(function(object){
+        d3p.animations.blocks[b].objects.push({ key: key, object: object, params: (params || {}) });
+        d3p.animations.blocks[b].n++;
+      });
+      return d3p.animations.api;
+    },
+    sync: function(key, objects, params){
+      d3p.helpers.toArray(objects).forEach(function(object){
+        d3p.animations.blocks.push({
+          type: "sequential",
+          objects: [{ key: key, object: object, params: (params || {}) }],
+          n: 1
+        });
+      });
+      return d3p.animations.api;
     }
-    d3p.animations.commit();
+  },
+  run: function(){
+    d3p.animations.setup();
+    d3p.animations.start();
+  },
+  start: function(){
+    if(d3p.animations.blocks.length <= 0) return;
+    var block = d3p.animations.blocks.shift(),
+        finished = 0,
+        check = function(){
+          finished++;
+          if(finished >= block.n){
+            d3p.animations.start();
+          }
+        };
+
+    block.objects.forEach(function(object){
+        d3p.transitions[object.key].run(object.object, object.params, check);
+    });
   },
   setup: function(){
-    d3p.animations.queue.forEach(function(animation){
-      animation.objects.forEach(function(object){
-        if(d3p.transitions[animation.key].setup) d3p.transitions[animation.key].setup(object, animation.params);
+    d3p.animations.blocks.forEach(function(block){
+      block.objects.forEach(function(object){
+        d3p.transitions[object.key].setup(object.object, object.params);
       });
-    });
-  },
-  sync: function(animation){
-    d3p.animations.commit();
-    animation.objects.forEach(function(object){
-      d3p.runner.add(function(done){
-        d3p.transitions[animation.key].run(object, animation.params, done);
-      });
-    });
-  },
-  async: function(animation){
-    d3p.animations.transaction.push(animation);
-  },
-  commit: function(){
-    if(d3p.animations.transaction.length == 0) return;
-    d3p.runner.add(function(done){
-      var animation, n = f = 0;
-      while(animation = d3p.animations.transaction.shift()){
-        n += animation.objects.length;
-        animation.objects.forEach(function(object){
-          d3p.transitions[animation.key].run(object, animation.params, function(){
-            f++;
-            if(f >= n) done();
-          });
-        });
-      }
     });
   }
 };
@@ -167,22 +94,86 @@ d3p.helpers = {
   }
 };
 
-d3p.runner = {
-  queue: [],
-  add: function(f){
-    d3p.runner.queue.push(f);
-    if(!d3p.running) d3p.runner.process();
+d3p.slide = {
+  index: 0,
+  locationHash: function(){
+    var index = parseInt(window.location.hash.substr(1));
+    if(!index) return;
+    d3p.slide.index = index;
   },
-  process: function(next){
-    if(next) d3p.next();
-    var f = d3p.runner.queue.shift();
-    if(f){
-      d3p.running = true;
-      f(d3p.runner.process);
-    } else{
-      d3p.running = false;
+  setup: function(){
+    d3p.slide.current = {
+      stage     : d3p.stage.main,
+      animate   : d3p.animations.api,
+      make      : d3p.theme.default,
+      objects   : [],
+      fragments : []
+    };
+  },
+  show: function(){
+    window.location.hash = "#" + d3p.slide.index;
+
+    d3p.stage.clear();
+    d3p.slide.setup();
+    d3p.slides[d3p.slide.index](d3p.slide.current, d3p.animations.run);
+    if(d3p.slides[d3p.slide.index].length <= 1) d3p.animations.run();
+  },
+  fragment: {
+    show: function(){
+      var fragment = d3p.slide.current.fragments.shift();
+      fragment(d3p.slide.current, d3p.animations.run);
+      if(fragment.length <= 1) d3p.animations.run();
     }
-  }
+  },
+  next: function(){
+    // Fragment
+    if(d3p.slide.current.fragments.length > 0){
+      d3p.slide.fragment.show();
+      return;
+    }
+
+    // Slide
+    if(d3p.slide.index < d3p.slides.length-1){
+      d3p.slide.index++;
+      d3p.slide.show();
+    }
+  },
+  previous: function(){
+    if(d3p.slide.index <= 0) return;
+    
+    d3p.slide.index--;
+    d3p.slide.show();
+  },
+};
+
+d3p.stage = {
+  setup: function(){
+    d3p.stage.svg      = d3.select("body").append("svg").attr("class", "d3p");
+    d3p.stage.position = d3p.stage.svg.append("g");
+    d3p.stage.main     = d3p.stage.position.append("g");
+
+    d3p.stage.resize();
+    window.onresize = d3p.stage.resize;
+  },
+  resize: function(){
+    d3p.stage.targetWidth  = window.innerWidth;
+    d3p.stage.targetHeight = window.innerHeight;
+    d3p.stage.targetHeight-=4;
+    d3p.stage.scaleWidth   = d3p.stage.targetWidth/d3p.width;
+    d3p.stage.scaleHeight  = d3p.stage.targetHeight/d3p.height;
+    d3p.stage.scale        = d3p.stage.scaleWidth < d3p.stage.scaleHeight ? d3p.stage.scaleWidth : d3p.stage.scaleHeight;
+
+    d3p.stage.svg.attr("width", d3p.stage.targetWidth).attr("height", d3p.stage.targetHeight);
+    d3p.stage.position.attr("transform", "translate(" + d3p.stage.targetWidth/2 + ", " + d3p.stage.targetHeight/2 + ")");
+    d3p.stage.main.attr("transform", "scale(" + d3p.stage.scale + ")");
+  },
+  clear: function(){
+    for(var name in d3p.slide.current.objects){
+      d3p.slide.current.objects[name].remove();
+    }
+  },
+  x: function(relative){ return relative * (d3p.width/2); },
+  y: function(relative){ return relative * (d3p.height/2); }
 };
 
 d3p.theme = {
