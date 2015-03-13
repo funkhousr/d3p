@@ -2,15 +2,17 @@ d3p.stage = {
   setup: function(){
     d3p.stage.svg      = d3.select("body").append("svg").attr("class", "d3p");
     d3p.stage.position = d3p.stage.svg.append("g");
-    d3p.stage.main     = d3p.stage.position.append("g");
+    d3p.stage.main     = d3p.stage.position.append("g").attr("class", "stage");
+
+    // Add Background
+    d3p.theme.default.background.klass(d3p.stage.main, "stage-background");
 
     d3p.stage.resize();
-    window.onresize = d3p.stage.resize;
+    if(!d3p.print.on) window.onresize = d3p.stage.resize;
   },
   resize: function(){
-    d3p.stage.targetWidth  = window.innerWidth;
-    d3p.stage.targetHeight = window.innerHeight;
-    d3p.stage.targetHeight-=4;
+    d3p.stage.targetWidth  = d3p.print.on ? document.body.clientWidth : window.innerWidth;
+    d3p.stage.targetHeight = d3p.print.on ? document.body.clientHeight : window.innerHeight;
     d3p.stage.scaleWidth   = d3p.stage.targetWidth/d3p.width;
     d3p.stage.scaleHeight  = d3p.stage.targetHeight/d3p.height;
     d3p.stage.scale        = d3p.stage.scaleWidth < d3p.stage.scaleHeight ? d3p.stage.scaleWidth : d3p.stage.scaleHeight;
