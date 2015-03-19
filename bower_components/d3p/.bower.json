@@ -1,6 +1,6 @@
 {
   "name": "d3p",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "homepage": "https://github.com/southdesign/d3p",
   "authors": [
     "Thomas Fankhauser <tommy@southdesign.de>"
@@ -36,14 +36,14 @@
     "d3": "~3.5.5",
     "bower-webfontloader": "~1.5.13"
   },
-  "_release": "0.0.2",
+  "_release": "0.0.4",
   "_resolution": {
     "type": "version",
-    "tag": "v0.0.2",
-    "commit": "e93e51c3e01293a780d3feda315eeaab65aafd6c"
+    "tag": "v0.0.4",
+    "commit": "e706626bfbfa59d5ee9c692c041a0dd818e39e19"
   },
   "_source": "git://github.com/southdesign/d3p.git",
-  "_target": "~0.0.2",
+  "_target": "~0.0.4",
   "_originalSource": "d3p",
   "_direct": true
 }

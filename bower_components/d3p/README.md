@@ -59,6 +59,24 @@ The default [phd](https://github.com/southdesign/d3p/blob/master/themes/phd) the
 
 So a theme is not only style, but also reusable functionality.
 
+## Configuration
+
+By default, slides are in 16:9 which is configurable from the `init` method:
+
+    d3p.init({
+      width: 1280,
+      height: 720,
+      // ...
+    });
+
+For all configuration options see the default [config](https://github.com/southdesign/d3p/blob/master/src/config.js).
+
+## Print / PDF Export
+
+Open the presentation with `#print` to see a print preview of all slides.
+The exported document size can be configured with `d3p.config.print.width` and `d3p.config.print.height`.
+Make sure it is set to the same page size as your printer and print without margins.
+
 
 ## API
 

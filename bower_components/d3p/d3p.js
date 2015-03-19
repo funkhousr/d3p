@@ -1,26 +1,31 @@
 var d3p = {
   slides: [],
-  init: function(){
-    d3p.width    = 1280;
-    d3p.height   = 720;
+  init: function(config){
     
-    d3p.stage.setup();
-    d3p.slide.setup();
-    d3p.slide.locationHash();
-    
-    // Keymapping
-    document.onkeydown = function(event){
-      if(event.which == 39) d3p.next();
-      if(event.which == 37) d3p.previous();
+    // Update Config
+    for(var key in config){
+      d3p.config[key] = config[key];
     }
-
+    
     // Simplify API
+    d3p.width    = d3p.config.width;
+    d3p.height   = d3p.config.height;
     d3p.next     = d3p.slide.next;
     d3p.previous = d3p.slide.previous;
     d3p.x        = d3p.stage.x;
     d3p.y        = d3p.stage.y;
-
+    
+    // Print Mode
+    if(d3p.print.setup()) return;
+    
+    // Slide Mode
+    d3p.stage.setup();
+    d3p.slide.setup();
+    d3p.slide.locationHash();
     d3p.slide.show();
+    
+    // Navigation
+    d3p.navigation.setup();
   }
 };
 
@@ -83,6 +88,15 @@ d3p.animations = {
   }
 };
 
+d3p.config = {
+  width: 1280,
+  height: 720,
+  print: {
+    width: "297mm",
+    height: "210mm"
+  }
+};
+
 d3p.helpers = {
   toArray: function(objects){
     if(Array.isArray(objects)) return objects;
@@ -91,6 +105,64 @@ d3p.helpers = {
       a.push(objects[key]);
     }
     return a;
+  }
+};
+
+d3p.navigation = {
+  setup: function(){
+    d3p.navigation.keys();
+    d3p.navigation.touch();
+  },
+  keys: function(){
+    document.onkeydown = function(event){
+      if(event.which == 39) d3p.next();
+      if(event.which == 37) d3p.previous();
+    }
+  },
+  touch: function(){
+    var
+    start,
+    minDelta = window.innerWidth * 0.25;
+
+    d3p.stage.main.node().addEventListener("touchstart", function(event){
+      start = event.touches[0].clientX;
+    });
+    d3p.stage.main.node().addEventListener("touchmove", function(event){
+      if(!start) return;
+      var delta = start - event.touches[0].clientX;
+      if(delta > minDelta){ 
+        d3p.next();
+        start = undefined;
+      }
+      if(delta < -minDelta){
+        d3p.previous();
+        start = undefined;
+      }
+    });
+    d3p.stage.main.node().addEventListener("touchend", function(event){
+      start = undefined;
+    });
+  }
+};
+
+d3p.print = {
+  setup: function(){
+    d3p.print.on = window.location.hash === "#print";
+    if(!d3p.print.on) return false;
+    
+    d3p.print.size();
+    d3p.print.render();
+    return true;
+  },
+  size: function(){
+    d3.select("body").style("width", d3p.config.print.width).style("height", d3p.config.print.height);
+  },
+  render: function(){
+    d3p.slides.forEach(function(slide, i){
+      d3p.stage.setup();
+      d3p.slide.setup();
+      slide(d3p.slide.current, d3p.animations.run);
+    });
   }
 };
 
@@ -150,15 +222,17 @@ d3p.stage = {
   setup: function(){
     d3p.stage.svg      = d3.select("body").append("svg").attr("class", "d3p");
     d3p.stage.position = d3p.stage.svg.append("g");
-    d3p.stage.main     = d3p.stage.position.append("g");
+    d3p.stage.main     = d3p.stage.position.append("g").attr("class", "stage");
+
+    // Add Background
+    d3p.theme.default.background.klass(d3p.stage.main, "stage-background");
 
     d3p.stage.resize();
-    window.onresize = d3p.stage.resize;
+    if(!d3p.print.on) window.onresize = d3p.stage.resize;
   },
   resize: function(){
-    d3p.stage.targetWidth  = window.innerWidth;
-    d3p.stage.targetHeight = window.innerHeight;
-    d3p.stage.targetHeight-=4;
+    d3p.stage.targetWidth  = d3p.print.on ? document.body.clientWidth : window.innerWidth;
+    d3p.stage.targetHeight = d3p.print.on ? document.body.clientHeight : window.innerHeight;
     d3p.stage.scaleWidth   = d3p.stage.targetWidth/d3p.width;
     d3p.stage.scaleHeight  = d3p.stage.targetHeight/d3p.height;
     d3p.stage.scale        = d3p.stage.scaleWidth < d3p.stage.scaleHeight ? d3p.stage.scaleWidth : d3p.stage.scaleHeight;
