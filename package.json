@@ -1,6 +1,6 @@
 {
   "name": "d3p",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "D3 Present Framework",
   "main": "d3p.js",
   "directories": {

@@ -1,6 +1,7 @@
 var d3p = {
   slides: [],
   init: function(config){
+    
     // Update Config
     for(var key in config){
       d3p.config[key] = config[key];
@@ -14,20 +15,17 @@ var d3p = {
     d3p.x        = d3p.stage.x;
     d3p.y        = d3p.stage.y;
     
-    // Keymapping
-    document.onkeydown = function(event){
-      if(event.which == 39) d3p.next();
-      if(event.which == 37) d3p.previous();
-    }
-    
     // Print Mode
     if(d3p.print.setup()) return;
-
+    
     // Slide Mode
     d3p.stage.setup();
     d3p.slide.setup();
     d3p.slide.locationHash();
     d3p.slide.show();
+    
+    // Navigation
+    d3p.navigation.setup();
   }
 };
 
@@ -107,6 +105,43 @@ d3p.helpers = {
       a.push(objects[key]);
     }
     return a;
+  }
+};
+
+d3p.navigation = {
+  setup: function(){
+    d3p.navigation.keys();
+    d3p.navigation.touch();
+  },
+  keys: function(){
+    document.onkeydown = function(event){
+      if(event.which == 39) d3p.next();
+      if(event.which == 37) d3p.previous();
+    }
+  },
+  touch: function(){
+    var
+    start,
+    minDelta = window.innerWidth * 0.25;
+
+    d3p.stage.main.node().addEventListener("touchstart", function(event){
+      start = event.touches[0].clientX;
+    });
+    d3p.stage.main.node().addEventListener("touchmove", function(event){
+      if(!start) return;
+      var delta = start - event.touches[0].clientX;
+      if(delta > minDelta){ 
+        d3p.next();
+        start = undefined;
+      }
+      if(delta < -minDelta){
+        d3p.previous();
+        start = undefined;
+      }
+    });
+    d3p.stage.main.node().addEventListener("touchend", function(event){
+      start = undefined;
+    });
   }
 };
 
