@@ -1,6 +1,7 @@
 var d3p = {
   slides: [],
   init: function(config){
+    
     // Update Config
     for(var key in config){
       d3p.config[key] = config[key];
@@ -14,14 +15,11 @@ var d3p = {
     d3p.x        = d3p.stage.x;
     d3p.y        = d3p.stage.y;
     
-    // Keymapping
-    document.onkeydown = function(event){
-      if(event.which == 39) d3p.next();
-      if(event.which == 37) d3p.previous();
-    }
-    
     // Print Mode
     if(d3p.print.setup()) return;
+    
+    // Navigation
+    d3p.navigation.setup();
 
     // Slide Mode
     d3p.stage.setup();
