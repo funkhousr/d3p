@@ -18,13 +18,13 @@ var d3p = {
     // Print Mode
     if(d3p.print.setup()) return;
     
-    // Navigation
-    d3p.navigation.setup();
-
     // Slide Mode
     d3p.stage.setup();
     d3p.slide.setup();
     d3p.slide.locationHash();
     d3p.slide.show();
+    
+    // Navigation
+    d3p.navigation.setup();
   }
 };
