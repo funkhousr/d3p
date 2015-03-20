@@ -6,12 +6,15 @@ For an example, see the [d3p: Demo Presentation](http://southdesign.github.io/d3
 
 ## Create a Presentation
 
-d3p does not need to be installed. Just create a folder for each new presentation, clone from `bower` and start with the provided template:
+Install **d3p** with npm:
 
-    mkdir talk && cd talk
-    bower install d3p
-    cp -R bower_components/d3p/template/* .
-    open index.html
+    npm install d3p
+
+Create a new presentation:
+
+    d3p new talk
+
+This will create a folder named `talk`, install d3p using bower and copy the basic presentation template for you.
 
 ## Presentation
 

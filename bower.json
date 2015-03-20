@@ -1,6 +1,6 @@
 {
   "name": "d3p",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "homepage": "https://github.com/southdesign/d3p",
   "authors": [
     "Thomas Fankhauser <tommy@southdesign.de>"
@@ -30,7 +30,10 @@
     ".gitignore",
     ".npmignore",
     "package.json",
-    "Gruntfile.json"
+    "Gruntfile.json",
+    "modules",
+    "bin",
+    "test"
   ],
   "dependencies": {
     "d3": "~3.5.5",
