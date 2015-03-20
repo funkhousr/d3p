@@ -8,7 +8,7 @@ For an example, see the [d3p: Demo Presentation](http://southdesign.github.io/d3
 
 Install **d3p** with npm:
 
-    npm install d3p
+    npm install d3p -g
 
 Create a new presentation:
 
