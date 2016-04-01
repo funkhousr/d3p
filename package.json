@@ -4,7 +4,6 @@
   "description": "D3 Present Framework",
   "main": "d3p.js",
   "scripts": {
-    "build": "cat src/d3p.js src/config.js src/stage.js src/slide.js src/theme.js src/transitions.js src/print.js src/theme.js src/animate.js src/navigation.js > d3p.js"
   },
   "repository": {
     "type": "git",
