@@ -10,11 +10,24 @@
     <script src="node_modules/webfontloader/webfontloader.js"></script>
 
     <!-- Style -->
-    <link rel="stylesheet" href="node_modules/d3p/d3p.css">
+    <style>
+      body{
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background-color: white;
+      }
 
-    <!-- Theme -->
-    <script src="node_modules/d3p/themes/phd/phd.js"></script>
-    <link rel="stylesheet" href="node_modules/d3p/themes/phd/phd.css">
+      svg.d3p{
+        display: block;
+      }
+
+      svg.d3p text{
+        text-anchor: middle;
+        dominant-baseline: middle;
+        baseline-shift: -7%;
+      }
+    </style>
   </head>
   <body>
 
