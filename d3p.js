@@ -13,18 +13,20 @@ d3p.init = function(config){
   }
 
   // API
-  d3p.width       = d3p.config.width;
-  d3p.height      = d3p.config.height;
+  d3p.maxWidth    = d3p.config.width;
+  d3p.maxHeight   = d3p.config.height;
   d3p.next        = d3p.slide.next;
   d3p.previous    = d3p.slide.previous;
   d3p.x           = d3p.stage.x;
   d3p.y           = d3p.stage.y;
+  d3p.width       = d3p.stage.width;
+  d3p.height      = d3p.stage.height;
   d3p.translate   = d3p.make.translate;
   d3p.group       = d3p.make.group;
   d3p.image       = d3p.make.image;
   d3p.svg         = d3p.make.svg;
 
-  // Print Mode
+  // Modes
   if(d3p.print.setup()) return;
 
   // Slide Mode
@@ -119,8 +121,8 @@ d3p.stage = {
   resize: function(){
     d3p.stage.targetWidth  = d3p.print.on ? document.body.clientWidth : window.innerWidth - 1;
     d3p.stage.targetHeight = d3p.print.on ? document.body.clientHeight : window.innerHeight - 1;
-    d3p.stage.scaleWidth   = d3p.stage.targetWidth/d3p.width;
-    d3p.stage.scaleHeight  = d3p.stage.targetHeight/d3p.height;
+    d3p.stage.scaleWidth   = d3p.stage.targetWidth/d3p.maxWidth;
+    d3p.stage.scaleHeight  = d3p.stage.targetHeight/d3p.maxHeight;
     d3p.stage.scale        = d3p.stage.scaleWidth < d3p.stage.scaleHeight ? d3p.stage.scaleWidth : d3p.stage.scaleHeight;
 
     d3p.stage.svg.attr("width", d3p.stage.targetWidth).attr("height", d3p.stage.targetHeight);
@@ -132,8 +134,10 @@ d3p.stage = {
       d3p.slide.current.objects[name].remove();
     }
   },
-  x: function(relative){ return relative * (d3p.width/2); },
-  y: function(relative){ return relative * (d3p.height/2); }
+  x: function(relative){ return relative * (d3p.maxWidth/2); },
+  y: function(relative){ return relative * (d3p.maxHeight/2); },
+  width: function(relative){ return relative * d3p.maxWidth; },
+  height: function(relative){ return relative * d3p.maxHeight; }
 };
 // }}}
 // d3p.slide {{{

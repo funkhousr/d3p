@@ -7,7 +7,6 @@
     <!-- d3p -->
     <script src="node_modules/d3/d3.min.js"></script>
     <script src="node_modules/d3p/d3p.js"></script>
-    <script src="node_modules/webfontloader/webfontloader.js"></script>
 
     <!-- Style -->
     <style>
@@ -32,6 +31,47 @@
   <body>
 
     <!-- Slides -->
-    <script src="slides.js"></script>
+    <script>
+d3p.slides.push(function(slide){
+  slide.objects.title = d3p.group(0, 0)
+    .append("text")
+    .text("d3p: Hello World");
+
+  slide.objects.box = d3p.group(-0.8,-0.8);
+  slide.objects.box.append("rect")
+    .attr("width", d3p.width(0.1))
+    .attr("height", d3p.height(0.1))
+    .style("fill", "#000000");
+
+  slide.fragments.push(function(slide){
+    slide.objects.subtitle = d3p.group(0, 0.1)
+      .append("text")
+      .text("This is pretty cool");
+
+    slide.objects.box.transition()
+      .duration(500)
+      .attr("transform", "translate(" + d3p.x(0.8) + "," + d3p.y(-0.8) + ")")
+      .transition()
+      .duration(500)
+      .attr("transform", "translate(" + d3p.x(0.8) + "," + d3p.y(0.8) + ")");
+  });
+});
+
+d3p.slides.push(function(slide){
+  slide.objects.title = d3p.group(0, 0)
+    .append("text")
+    .text("Content");
+
+  slide.fragments.push(function(slide){
+    slide.objects.title.transition()
+      .duration(500)
+      .style("opacity", 0);
+  });
+});
+
+// Wait for DOM, and fire!
+document.addEventListener('DOMContentLoaded', d3p.init);
+      window.addEventListener("storage", console.log);
+    </script>
   </body>
 </html>
